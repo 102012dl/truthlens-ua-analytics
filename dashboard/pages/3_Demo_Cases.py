@@ -100,11 +100,11 @@ if "results" in st.session_state and st.session_state.results:
     
     def highlight_rows(row):
         if "Отримано" in row and row["Отримано"] == "ERROR":
-            return ['background-color: #ffebee; color: #b71c1c'] * len(row)
+            return ['background-color: #ffebee; color: #d32f2f; font-weight: bold'] * len(row)
         elif "✅" in row and not row["✅"]:
-            return ['background-color: #fff8e1; color: #f57f17'] * len(row)
+            return ['background-color: #fff3e0; color: #f57c00; font-weight: bold'] * len(row)
         else:
-            return ['background-color: #e8f5e8; color: #2e7d32'] * len(row)
+            return ['background-color: #e8f5e8; color: #388e3c; font-weight: normal'] * len(row)
     
     display_df = results_df[["id", "text", "expected", "got", "match", "score", "ipso"]].copy()
     display_df.columns = ["#", "Текст", "Очікувано", "Отримано", "✅", "Рейтинг", "ІПСО"]

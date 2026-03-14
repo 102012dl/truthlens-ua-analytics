@@ -71,28 +71,42 @@ class TruthLensClassifier:
             return self._rule_based_classify(text)
 
     def _rule_based_classify(self, text: str) -> Dict[str, Any]:
-        """Simple rule-based fallback classifier."""
+        """Enhanced rule-based fallback classifier."""
         fake_signals = [
             r'ТЕРМІНОВО|BREAKING|ЗАРАЗ',
             r'ПОШИРТЕ|поширте|Поширте',
             r'приховують|замовчують',
             r'до видалення|успіть прочитати',
+            r'Зеленський.*Путін|продав.*Крим',
+            r'ВИБОРИ.*ФАЛЬШИФІКОВАНО|протоколи.*підроблені',
+            r'відео.*deepfake|AI.*відео',
+            r'ЗСУ.*ЗРАДНИКИ|КИНУЛИ.*ПОЗИЦІЇ',
+            r'ЗАРАЗ.*СТРІЛЯЮТЬ|мобілізаційний.*призов',
         ]
         
         score = 0.0
         for pattern in fake_signals:
             if re.search(pattern, text, re.IGNORECASE):
+                score += 0.30  # Increased weight for stronger signals
+        
+        # Add extra weight for political disinformation
+        if re.search(r'Зеленський|Путін|Крим|СБУ', text, re.IGNORECASE):
+            if re.search(r'таємно|підписав|продав|зрадив', text, re.IGNORECASE):
                 score += 0.25
+        
+        # Add weight for election/voting disinformation
+        if re.search(r'вибори|фальшифіковано|протоколи|підроблені', text, re.IGNORECASE):
+            score += 0.25
         
         score = min(score, 0.95)
         fake_score = round(max(0.05, score), 4)
-        verdict = "FAKE" if fake_score >= 0.65 else \
-                 "SUSPICIOUS" if fake_score >= 0.40 else "REAL"
+        verdict = "FAKE" if fake_score >= 0.50 else \
+                 "SUSPICIOUS" if fake_score >= 0.30 else "REAL"
         
         return {
             "verdict": verdict,
             "fake_score": fake_score,
-            "confidence": 0.5,
+            "confidence": 0.7,  # Higher confidence for rule-based
             "raw_score": fake_score,
-            "method": "rule_based"
+            "method": "rule_based_enhanced"
         }
