@@ -133,7 +133,7 @@ with tab1:
                         
             except requests.exceptions.RequestException as e:
                 st.error(f"Не вдалося підключитися до API: {e}")
-                st.info("Переконайтеся, що API сервер запущений на http://localhost:8000")
+                st.info("Переконайтеся, що API сервер запущений на правильному URL")
         else:
             st.warning("Будь ласка, введіть текст для аналізу")
 
@@ -146,6 +146,12 @@ with tab2:
     - **Модель:** LinearSVC + TF-IDF + Rule-based
     - **ІПСО детекція:** 10+ технік маніпуляції
     - **Час відповіді:** ~77мс
+    
+    **Архітектура:**
+    - **Multi-Agent System:** Orchestrator + Classifier + IPSO Detector
+    - **ML Model:** LinearSVC з TF-IDF векторизацією
+    - **Rule-based:** Fallback для специфічних патернів
+    - **IPSO Detection:** 10+ технік маніпуляції
     """)
     
     st.markdown("""
@@ -160,6 +166,15 @@ with tab2:
     - **awakening_appeal** - Заклик до "пробудження"
     - **authority_impersonation** - Імперсонація влади
     - **deepfake_indicator** - Deepfake детекція
+    """)
+    
+    st.markdown("""
+    **Технологічний стек:**
+    - **Backend:** FastAPI + Python 3.10+
+    - **Frontend:** Streamlit + Plotly
+    - **ML:** Scikit-learn + NumPy + Pandas
+    - **Deploy:** Render Cloud Platform
+    - **Version Control:** GitHub + GitLab
     """)
 
 with tab3:
