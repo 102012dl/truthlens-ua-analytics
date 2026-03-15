@@ -148,18 +148,30 @@ graph TD
 - Docker & Docker Compose
 - Python 3.10+ (для локального запуску)
 
-### 🎯 Найпростіший запуск (Windows)
+### 🎯 Найпростіший запуск (Автоматично)
 
-**Двічі клікніть на `start.bat`** - автоматично запустить все необхідне!
+**Windows:**
+```powershell
+# Запустіть в PowerShell:
+.\start.ps1
+```
 
+**Linux/Mac:**
 ```bash
-# Або вручну:
+# Запустіть в терміналі:
+chmod +x start.sh
+./start.sh
+```
+
+**Або вручну:**
+```bash
 # 1. Клонування
 git clone https://github.com/102012dl/truthlens-ua-analytics.git
 cd truthlens-ua-analytics
 
 # 2. Запуск (одна команда)
-start.bat
+# Windows: .\start.ps1
+# Linux/Mac: ./start.sh
 ```
 
 ### 🌐 Cloud Deploy (1 хвилина)
@@ -208,11 +220,25 @@ docker-compose ps
 
 ### Локальний запуск
 
-```bash
+**Windows (PowerShell):**
+```powershell
 # 1. Встановлення залежностей
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# venv\Scripts\activate  # Windows
+venv\Scripts\activate
+pip install -r requirements.txt
+
+# 2. Запуск API (в одному терміналі)
+python -m uvicorn app.api.main:app --reload --port 8000
+
+# 3. Запуск Dashboard (в іншому терміналі)
+streamlit run dashboard/app.py
+```
+
+**Linux/Mac:**
+```bash
+# 1. Встановлення залежностей
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 
 # 2. Запуск API (в одному терміналі)
@@ -234,9 +260,11 @@ streamlit run dashboard/app.py
 ### 🔧 Вирішення проблем
 
 **❌ Поширені помилки:**
-- `dashboard/pages/Home.py не знайдено` → використовуйте `dashboard/app.py`
-- `source не розпізнано` → використовуйте `start.bat` або `venv\Scripts\activate`
-- `Docker не запускається` → створіть `.env` файл (див. `.env.example`)
+- `start.bat: command not found` → використовуйте `./start.sh` (Linux/Mac) або `.\start.ps1` (Windows)
+- `source не розпізнано` → використовуйте `venv\Scripts\activate` в Windows
+- `ModuleNotFoundError: No module named 'app'` → переконайтеся що ви в директорії проекту
+- `File does not exist: dashboard/app.py` → запустіть з правильної директорії
+- `Address already in use` → змініть порт або закрийте попередні процеси
 
 **✅ Перевірка роботи:**
 ```bash
@@ -245,6 +273,20 @@ curl http://localhost:8000/health
 
 # Test Dashboard
 streamlit run dashboard/app.py
+```
+
+**📱 Правильна структура директорії:**
+```
+truthlens-ua-analytics/
+├── app/
+│   └── api/
+│       └── main.py
+├── dashboard/
+│   └── app.py
+├── requirements.txt
+├── start.sh (Linux/Mac)
+├── start.ps1 (Windows)
+└── start.bat (Windows - legacy)
 ```
 
 ---
