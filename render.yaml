@@ -1,0 +1,44 @@
+# Render Configuration File
+# Place this file in your repository root as render.yaml
+
+services:
+  # Streamlit Dashboard Service
+  - type: web
+    name: truthlens-ua
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run dashboard/app.py --server.port $PORT --server.address 0.0.0.0
+    healthCheckPath: /_stcore/health
+    envVars:
+      - key: MODEL_PATH
+        value: artifacts/best_model.joblib
+      - key: API_HOST
+        value: 0.0.0.0
+      - key: LOG_LEVEL
+        value: INFO
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    autoDeploy: true
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+
+# Optional: Add API service separately
+#  - type: web
+#    name: truthlens-ua-api
+#    env: python
+#    plan: free
+#    buildCommand: pip install -r requirements.txt
+#    startCommand: python -m uvicorn app.api.main:app --host 0.0.0.0 --port $PORT
+#    healthCheckPath: /health
+#    envVars:
+#      - key: MODEL_PATH
+#        value: artifacts/best_model.joblib
+#      - key: DATABASE_URL
+#        sync: false
+#    autoDeploy: true

@@ -164,14 +164,28 @@ start.bat
 
 ### 🌐 Cloud Deploy (1 хвилина)
 
-**Deploy на Render без локальної установки:**
-1. Перейдіть на https://render.com
-2. Підключіть GitHub: https://github.com/102012dl/truthlens-ua-analytics
-3. Web Service → Python
-4. Build: `pip install -r requirements.txt`
-5. Start: `streamlit run dashboard/app.py --server.port $PORT --server.address 0.0.0.0`
+**🎯 Найшвидший спосіб - автоматичний деплой:**
 
-**Готово! 🚀 Доступ: https://truthlens-ua.onrender.com**
+**Крок 1: Підключіть GitHub до Render**
+1. Перейдіть на https://render.com
+2. Login з GitHub: `102012dl` (email: 102012dl@gmail.com)
+3. Connect: https://github.com/102012dl/truthlens-ua-analytics
+
+**Крок 2: Створіть Web Service**
+- Name: `truthlens-ua`
+- Runtime: `Python 3`
+- Build: `pip install -r requirements.txt`
+- Start: `streamlit run dashboard/app.py --server.port $PORT --server.address 0.0.0.0`
+
+**Крок 3: Deploy!**
+Натисніть "Create Web Service" і чекайте 2 хвилини.
+
+**🚀 Готово! Ваш додаток доступний: https://truthlens-ua.onrender.com**
+
+**📱 Автоматична перевірка:**
+```bash
+python check_render.py --wait
+```
 
 ### Запуск через Docker (Рекомендовано)
 
