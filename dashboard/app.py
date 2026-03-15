@@ -25,13 +25,6 @@ st.markdown("""
 <meta http-equiv="Expires" content="0">
 """, unsafe_allow_html=True)
 
-# Handle invalid page routes
-current_page = st.runtime.get_instance_id()
-if "Executive_Summary" in current_page or "Source_Credibility" in current_page or "Demo_Cases" in current_page:
-    st.error("🚫 Ця сторінка не існує. Будь ласка, використовуйте основну сторінку.")
-    st.info("📍 Перейдіть до: https://truthlens-ua-analytics.onrender.com")
-    st.stop()
-
 # Custom CSS
 st.markdown("""
 <style>
@@ -76,11 +69,14 @@ st.markdown("---")
 
 # Sidebar
 st.sidebar.markdown("### ⚙️ Налаштування")
-# Auto-detect if running on Render
-if "onrender.com" in st.runtime.get_instance_id() or "RENDER" in os.environ.get("ENV", ""):
-    api_url = st.sidebar.text_input("API URL", value="https://truthlens-ua-analytics.onrender.com")
-else:
-    api_url = st.sidebar.text_input("API URL", value="http://localhost:8000")
+default_api_url = os.environ.get("API_URL", "http://127.0.0.1:8000")
+if os.environ.get("RENDER_EXTERNAL_URL"):
+    default_api_url = os.environ.get("RENDER_EXTERNAL_URL")
+elif os.environ.get("ENV", "").lower() == "production":
+    default_api_url = os.environ.get("API_URL", default_api_url)
+if "api_url" not in st.session_state or not st.session_state.api_url:
+    st.session_state.api_url = default_api_url
+api_url = st.sidebar.text_input("API URL", key="api_url")
 st.sidebar.markdown("---")
 
 # Built-in analysis function
@@ -197,20 +193,47 @@ with tab1:
             with st.spinner("Аналізую текст..."):
                 # Спробуємо API, якщо не працює - використаємо вбудовану функцію
                 try:
-                    response = requests.post(
-                        f"{api_url}/check",
-                        json={"text": text_input, "domain": "direct_input"},
-                        timeout=5
-                    )
-                    
-                    if response.status_code == 200:
-                        result = response.json()
-                        st.success("✅ Аналіз виконано через API")
-                    else:
-                        raise Exception(f"API error: {response.status_code}")
-                        
+                    normalized_api_url = api_url.strip().rstrip("/")
+                    if normalized_api_url.startswith("http://localhost:"):
+                        normalized_api_url = normalized_api_url.replace("http://localhost:", "http://127.0.0.1:")
+                    elif normalized_api_url.startswith("https://localhost:"):
+                        normalized_api_url = normalized_api_url.replace("https://localhost:", "https://127.0.0.1:")
+                    elif normalized_api_url == "http://localhost":
+                        normalized_api_url = "http://127.0.0.1"
+                    elif normalized_api_url == "https://localhost":
+                        normalized_api_url = "https://127.0.0.1"
+
+                    candidate_urls = [normalized_api_url]
+
+                    payload = {"text": text_input}
+                    if re.match(r"^https?://", text_input.strip(), re.IGNORECASE):
+                        payload = {"url": text_input.strip()}
+
+                    last_error = None
+                    result = None
+
+                    for candidate_url in list(dict.fromkeys(candidate_urls)):
+                        try:
+                            response = requests.post(
+                                f"{candidate_url}/check",
+                                json=payload,
+                                timeout=5
+                            )
+
+                            if response.status_code == 200:
+                                result = response.json()
+                                st.success(f"✅ Аналіз виконано через API ({candidate_url})")
+                                break
+
+                            last_error = f"{candidate_url}: API error {response.status_code} - {response.text[:300]}"
+                        except Exception as request_error:
+                            last_error = f"{candidate_url}: {request_error}"
+
+                    if result is None:
+                        raise Exception(last_error or "Unknown API error")
+
                 except Exception as e:
-                    st.warning("⚠️ API недоступний, використовується вбудований аналіз")
+                    st.warning(f"⚠️ API недоступний, використовується вбудований аналіз ({e})")
                     result = analyze_text_locally(text_input)
                 
                 # Display result

@@ -57,56 +57,61 @@ async def check_text(request: CheckRequest, db: AsyncSession = Depends(get_db)):
     # 2. Run orchestrator
     result = await _orchestrator.process(text, domain)
 
-    # 3. Persist to DB
-    # Get or create source
-    source = await repository.get_or_create_source(db, domain)
-    source.article_count += 1
-    await db.flush()
+    article_id = 0
+    source_credibility = result.get("source_credibility", 50.0)
 
-    # Create article
-    article = models.Article(
-        source_id=source.id,
-        url=request.url,
-        title=title[:200] if title else None,
-        body=text[:5000],
-        language=request.language,
-    )
-    db.add(article)
-    await db.flush()
+    # 3. Persist to DB when available
+    try:
+        source = await repository.get_or_create_source(db, domain)
+        source.article_count += 1
+        await db.flush()
 
-    # Create claim (headline = primary claim for v1)
-    claim = models.Claim(
-        article_id=article.id,
-        text=title[:500] or text[:200],
-        is_primary=True,
-    )
-    db.add(claim)
-    await db.flush()
+        article = models.Article(
+            source_id=source.id,
+            url=request.url,
+            title=title[:200] if title else None,
+            body=text[:5000],
+            language=request.language,
+        )
+        db.add(article)
+        await db.flush()
 
-    # Create claim check
-    check = models.ClaimCheck(
-        claim_id=claim.id,
-        verdict=result["verdict"],
-        credibility_score=result["credibility_score"],
-        fake_score=result["fake_score"],
-        confidence=result["confidence"],
-        ipso_techniques=result["ipso_techniques"],
-        explanation_uk=result["explanation_uk"],
-        processing_time_ms=result["processing_time_ms"],
-    )
-    db.add(check)
-    await db.commit()
+        claim = models.Claim(
+            article_id=article.id,
+            text=title[:500] or text[:200],
+            is_primary=True,
+        )
+        db.add(claim)
+        await db.flush()
+
+        check = models.ClaimCheck(
+            claim_id=claim.id,
+            verdict=result["verdict"],
+            credibility_score=result["credibility_score"],
+            fake_score=result["fake_score"],
+            confidence=result["confidence"],
+            ipso_techniques=result["ipso_techniques"],
+            explanation_uk=result["explanation_uk"],
+            processing_time_ms=result["processing_time_ms"],
+        )
+        db.add(check)
+        await db.commit()
+        article_id = article.id
+        source_credibility = getattr(source, "credibility_score", source_credibility)
+    except Exception as e:
+        await db.rollback()
+        print(f"[check] DB persistence skipped: {e}")
 
     total_ms = round((time.perf_counter() - start) * 1000, 2)
 
     return CheckResponse(
-        article_id=article.id,
+        article_id=article_id,
         verdict=result["verdict"],
         credibility_score=result["credibility_score"],
         fake_score=result["fake_score"],
         confidence=result["confidence"],
         ipso_techniques=result["ipso_techniques"],
-        source_credibility=result["source_credibility"],
+        source_credibility=source_credibility,
         explanation_uk=result["explanation_uk"],
         source_domain=domain,
         language=request.language,

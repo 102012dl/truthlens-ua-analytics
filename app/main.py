@@ -7,11 +7,9 @@ from contextlib import asynccontextmanager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
-    await init_db()
+    db_ready = await init_db()
+    app.state.db_ready = db_ready
     yield
-    # Shutdown (if needed)
-    pass
 
 
 app = FastAPI(
@@ -41,5 +39,6 @@ async def root():
         "service": "TruthLens UA Analytics",
         "version": "1.0.0",
         "status": "running",
-        "docs": "/docs"
+        "docs": "/docs",
+        "db_ready": getattr(app.state, "db_ready", False)
     }

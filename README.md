@@ -228,10 +228,10 @@ venv\Scripts\activate
 pip install -r requirements.txt
 
 # 2. Запуск API (в одному терміналі)
-python -m uvicorn app.api.main:app --reload --port 8000
+python -m uvicorn app.main:app --reload --port 8000
 
 # 3. Запуск Dashboard (в іншому терміналі)
-streamlit run dashboard/app.py
+streamlit run dashboard/app.py --server.port 8501
 ```
 
 **Linux/Mac:**
@@ -242,10 +242,45 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # 2. Запуск API (в одному терміналі)
-python -m uvicorn app.api.main:app --reload --port 8000
+python -m uvicorn app.main:app --reload --port 8000
 
 # 3. Запуск Dashboard (в іншому терміналі)
-streamlit run dashboard/app.py
+streamlit run dashboard/app.py --server.port 8501
+```
+
+### Швидкий запуск після перезапуску комп'ютера
+
+**Windows PowerShell:**
+```powershell
+cd C:\Users\home2\Downloads\truthlens-ua-analytics
+python -m uvicorn app.main:app --reload --port 8000
+```
+
+```powershell
+cd C:\Users\home2\Downloads\truthlens-ua-analytics\dashboard
+streamlit run app.py --server.port 8501
+```
+
+**WSL / Linux:**
+```bash
+cd /mnt/c/Users/home2/Downloads/truthlens-ua-analytics
+python -m uvicorn app.main:app --reload --port 8000
+```
+
+```bash
+cd /mnt/c/Users/home2/Downloads/truthlens-ua-analytics/dashboard
+streamlit run app.py --server.port 8501
+```
+
+**Docker:**
+```bash
+docker-compose up --build
+```
+
+**Перевірка API:**
+```powershell
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/health"
+Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:8000/check" -ContentType "application/json" -Body '{"text":"Тестова новина для перевірки"}'
 ```
 
 ### 📱 Швидкий доступ
@@ -265,14 +300,15 @@ streamlit run dashboard/app.py
 - `ModuleNotFoundError: No module named 'app'` → переконайтеся що ви в директорії проекту
 - `File does not exist: dashboard/app.py` → запустіть з правильної директорії
 - `Address already in use` → змініть порт або закрийте попередні процеси
+- `API недоступний у dashboard` → перевірте, що в sidebar встановлено `http://127.0.0.1:8000`
 
 **✅ Перевірка роботи:**
 ```bash
 # Test API
-curl http://localhost:8000/health
+curl http://127.0.0.1:8000/health
 
 # Test Dashboard
-streamlit run dashboard/app.py
+streamlit run dashboard/app.py --server.port 8501
 ```
 
 **📱 Правильна структура директорії:**
@@ -280,12 +316,14 @@ streamlit run dashboard/app.py
 truthlens-ua-analytics/
 ├── app/
 │   └── api/
-│       └── main.py
+│       └── routes/
 ├── dashboard/
 │   └── app.py
 ├── requirements.txt
 ├── start.sh (Linux/Mac)
 ├── start.ps1 (Windows)
+├── start_universal.sh
+├── start_universal.ps1
 └── start.bat (Windows - legacy)
 ```
 
@@ -537,7 +575,8 @@ MIT License - див. файл [LICENSE](LICENSE).
 |-----------|-----------|--------|
 | **GitHub** | https://github.com/102012dl/truthlens-ua-analytics | ✅ Основний |
 | **GitLab** | https://gitlab.com/102012dl/truthlens-ua-analytics | ✅ Backup |
-| **Render** | https://truthlens-ua.onrender.com | 🚀 Live Demo |
+| **Render Dashboard** | https://truthlens-ua-analytics.onrender.com | 🚀 Live Demo |
+| **Render API / legacy endpoint** | https://truthlens-ua.onrender.com | ℹ️ Separate service root |
 
 ---
 

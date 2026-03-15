@@ -15,9 +15,14 @@ class Base(DeclarativeBase):
     pass
 
 async def init_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    print("[startup] Database initialized")
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        print("[startup] Database initialized")
+        return True
+    except Exception as e:
+        print(f"[startup] Database initialization skipped: {e}")
+        return False
 
 async def check_db_connection() -> bool:
     try:

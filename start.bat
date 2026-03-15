@@ -23,13 +23,13 @@ if errorlevel 1 (
 
 echo.
 echo [3/4] Starting API server...
-start "API Server" cmd /k "python -m uvicorn app.api.main:app --reload --port 8000"
+start "API Server" cmd /k "python -m uvicorn app.main:app --reload --port 8000"
 
 echo Waiting for API to start...
 timeout /t 3 /nobreak > nul
 
 echo.
 echo [4/4] Starting Dashboard...
-streamlit run dashboard/app.py
+streamlit run dashboard/app.py --server.port 8501
 
 pause

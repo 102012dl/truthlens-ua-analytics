@@ -33,15 +33,16 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host ""
 Write-Host "[4/4] Starting services..." -ForegroundColor Yellow
 Write-Host "Starting API server in background..." -ForegroundColor Cyan
-
-# Start API in background
-$apiProcess = Start-Process -FilePath "python" -ArgumentList "-m", "uvicorn", "app.api.main:app", "--reload", "--port", "8000" -PassThru -WindowStyle Hidden
+$repoPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+$apiProcess = Start-Process -FilePath "python" -ArgumentList "-m", "uvicorn", "app.main:app", "--reload", "--port", "8000" -WorkingDirectory $repoPath -PassThru
 
 Write-Host "Waiting for API to start..." -ForegroundColor Cyan
 Start-Sleep -Seconds 3
 
 Write-Host "Starting Dashboard..." -ForegroundColor Cyan
-streamlit run dashboard/app.py
-
-# Cleanup API process when done
-Stop-Process -Id $apiProcess.Id -Force -ErrorAction SilentlyContinue
+$dashboardPath = Join-Path $repoPath "dashboard"
+try {
+    streamlit run "$dashboardPath\app.py" --server.port 8501
+} finally {
+    Stop-Process -Id $apiProcess.Id -Force -ErrorAction SilentlyContinue
+}
