@@ -7,7 +7,7 @@ import re
 
 # Configuration
 st.set_page_config(
-    page_title="TruthLens UA Analytics",
+    page_title="TruthLens UA Analytics v2.1",
     page_icon="🔍",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -16,6 +16,13 @@ st.set_page_config(
 # Force cache clearing
 if "text_input" not in st.session_state:
     st.session_state.text_input = ""
+
+# Add cache busting
+st.markdown("""
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+""", unsafe_allow_html=True)
 
 # Custom CSS
 st.markdown("""
@@ -56,7 +63,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Header
-st.markdown('<h1 class="main-header">🔍 TruthLens UA Analytics</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-header">🔍 TruthLens UA Analytics v2.1</h1>', unsafe_allow_html=True)
 st.markdown("---")
 
 # Sidebar
