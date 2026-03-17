@@ -53,9 +53,9 @@ st.markdown("---")
 st.sidebar.markdown("### ⚙️ Налаштування")
 # На Render за замовчуванням — тільки вбудований аналіз (без звернення до localhost)
 is_render = "RENDER" in os.environ or bool(os.environ.get("RENDER_EXTERNAL_URL"))
-default_api_url = os.environ.get("API_URL", "")
-if not is_render and not default_api_url:
-    default_api_url = "http://127.0.0.1:8000"
+default_api_url = os.environ.get("API_URL", "http://localhost:8000")
+if is_render:
+    default_api_url = "https://truthlens-ua-analytics.onrender.com"
 if "api_url" not in st.session_state:
     st.session_state.api_url = default_api_url
 api_url = st.sidebar.text_input(
@@ -175,8 +175,9 @@ with tab1:
     with col1:
         text_input = st.text_area(
             "Введіть текст новини для перевірки:",
+            value="",
             height=120,
-            placeholder="Вставте текст або URL...",
+            placeholder="Вставте текст або URL для перевірки...",
             key="main_text_input",
             label_visibility="visible"
         )

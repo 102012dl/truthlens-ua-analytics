@@ -21,7 +21,7 @@ class CheckRequest(BaseModel):
     def at_least_one_required(cls, v, values, **kwargs):
         url = values.data.get('url') if 'url' in values.data else None
         text = values.data.get('text') if 'text' in values.data else None
-        
+
         if not url and not text and v is None:
             raise ValueError("Provide either 'url' or 'text'")
         return v

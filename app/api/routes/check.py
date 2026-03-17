@@ -4,7 +4,9 @@ from app.db.database import get_db
 from app.db import models, repository
 from app.schemas.check import CheckRequest, CheckResponse
 from app.agents.orchestrator import TruthLensOrchestrator
-import httpx, re, time
+import httpx
+import re
+import time
 
 router = APIRouter()
 _orchestrator = TruthLensOrchestrator()

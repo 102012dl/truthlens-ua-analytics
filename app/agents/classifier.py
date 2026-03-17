@@ -83,7 +83,7 @@ class TruthLensClassifier:
             r'ЗСУ.*ЗРАДНИКИ|КИНУЛИ.*ПОЗИЦІЇ',
             r'ЗАРАЗ.*СТРІЛЯЮТЬ|мобілізаційний.*призов',
         ]
-        
+
         # SUSPICIOUS patterns - uncertain or unverified statements
         suspicious_patterns = [
             r'експерти.*попереджають|можливу.*кризу|через.*світові',
@@ -93,7 +93,7 @@ class TruthLensClassifier:
             r'банки.*можуть|змінити|умови|кредитування|найближчим',
             r'новий.*закон|розглянутий|парламенті',
         ]
-        
+
         # Positive patterns for official statements
         real_patterns = [
             r'відзвітували.*про.*бойові.*дії',
@@ -112,26 +112,26 @@ class TruthLensClassifier:
             r'підписав.*указ.*про.*соціальні',
             r'оновило.*навчальні.*програми',
         ]
-        
+
         score = 0.0
         suspicious_score = 0.0
         real_score = 0.0
-        
+
         # Check FAKE signals
         for pattern in fake_signals:
             if re.search(pattern, text, re.IGNORECASE):
                 score += 0.30
-        
+
         # Check SUSPICIOUS signals
         for pattern in suspicious_patterns:
             if re.search(pattern, text, re.IGNORECASE):
                 suspicious_score += 0.20
-        
+
         # Check for positive REAL patterns
         for pattern in real_patterns:
             if re.search(pattern, text, re.IGNORECASE):
                 real_score += 0.25
-        
+
         # Check for strong IPSO indicators that should override REAL classification
         strong_ipso_patterns = [
             r'anonymous_sources',
@@ -139,13 +139,13 @@ class TruthLensClassifier:
             r'urgency_injection.*deletion_threat.*viral_call',
             r'conspiracy_framing.*caps_abuse.*awakening_appeal',
         ]
-        
+
         ipso_override = False
         for pattern in strong_ipso_patterns:
             if pattern in text.lower():  # IPSO patterns will be added later in orchestrator
                 ipso_override = True
                 break
-        
+
         # If strong REAL patterns found AND no strong IPSO, prioritize REAL
         if real_score >= 0.25 and suspicious_score < 0.20 and not ipso_override:
             fake_score = 0.05
@@ -166,24 +166,24 @@ class TruthLensClassifier:
             # No suspicious or fake signals
             fake_score = 0.05
             verdict = "REAL"
-        
+
         # Enhanced political disinformation detection
         if re.search(r'Зеленський|Путін|Крим|СБУ', text, re.IGNORECASE):
             if re.search(r'таємно|підписав|продав|зрадив|анонімне|джерело', text, re.IGNORECASE):
                 score += 0.40
-        
+
         # Enhanced election/voting disinformation
         if re.search(r'вибори|фальшифіковано|протоколи|підроблені', text, re.IGNORECASE):
             score += 0.35
-        
+
         # Deepfake detection
         if re.search(r'відео.*deepfake|AI.*відео|генералом.*виявилось', text, re.IGNORECASE):
             score += 0.45
-        
+
         # Military disinformation
         if re.search(r'ЗСУ.*ЗРАДНИКИ|КИНУЛИ.*ПОЗИЦІЇ|ПРАВДА.*ЗАМОВЧУЮТЬ', text, re.IGNORECASE):
             score += 0.35
-        
+
         return {
             "verdict": verdict,
             "fake_score": fake_score,

@@ -13,7 +13,7 @@ async def health_check():
     """
     db_status = "connected" if await check_db_connection() else "disconnected"
     overall_status = "ok" if db_status == "connected" else "degraded"
-    
+
     return {
         "status": overall_status,
         "db": db_status,

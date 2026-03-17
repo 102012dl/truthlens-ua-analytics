@@ -1,5 +1,4 @@
 import time
-import math
 from typing import Dict, Any
 
 from app.agents.classifier import TruthLensClassifier

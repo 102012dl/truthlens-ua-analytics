@@ -1,0 +1,32 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\home2\Downloads\ACS Capstone Project 2058 130226\truthlens-ua-analytics
+plugins: anyio-4.9.0, langsmith-0.7.4, asyncio-1.3.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 12 items
+
+tests\test_check.py .....F                                               [ 50%]
+tests\test_health.py ..                                                  [ 66%]
+tests\test_scorer.py ....                                                [100%]
+
+================================== FAILURES ===================================
+_____________________ test_check_response_has_all_fields ______________________
+
+client = <starlette.testclient.TestClient object at 0x0000016FE03E63C0>
+
+    def test_check_response_has_all_fields(client):
+        r = client.post("/check", json={"text": "Test"})
+>       assert r.status_code == 200
+E       assert 400 == 200
+E        +  where 400 = <Response [400 Bad Request]>.status_code
+
+tests\test_check.py:31: AssertionError
+============================== warnings summary ===============================
+tests/test_health.py::test_health_returns_ok
+  C:\Users\home2\Downloads\ACS Capstone Project 2058 130226\truthlens-ua-analytics\app\api\routes\health.py:21: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "timestamp": datetime.utcnow().isoformat() + "Z"
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_check.py::test_check_response_has_all_fields - assert 400 =...
+=================== 1 failed, 11 passed, 1 warning in 0.23s ===================

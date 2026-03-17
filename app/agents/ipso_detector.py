@@ -9,7 +9,7 @@ class IPSODetector:
     Detector of Information-Psychological Special Operations (ІПСО).
     10 techniques from UNLP 2025 research on Ukrainian Telegram.
     """
-    
+
     TECHNIQUES = {
         "urgency_injection": r'ТЕРМІНОВО|ЗАРАЗ|BREAKING|УВАГА|НЕГАЙНО',
         "caps_abuse": None,  # special: >30% caps check
@@ -22,13 +22,13 @@ class IPSODetector:
         "authority_impersonation": r'Зеленськ\w+ заявив|МОЗ повідомив|ОП підтвердив',
         "deepfake_indicator": r'фейкове відео|синтезован\w+|AI-відео|дипфейк',
     }
-    
+
     OVERRIDE_THRESHOLD = 2  # ipso_count >= 2 → FAKE override
 
     def detect(self, text: str) -> List[str]:
         """Detect ІПСО techniques in text. Returns list of technique names."""
         detected = []
-        
+
         for name, pattern in self.TECHNIQUES.items():
             if name == "caps_abuse":
                 # Special case: check for excessive capital letters
@@ -38,7 +38,7 @@ class IPSODetector:
                     detected.append(name)
             elif pattern and re.search(pattern, text, re.IGNORECASE):
                 detected.append(name)
-        
+
         return detected
 
     def get_override(self, techniques: List[str]) -> bool:
