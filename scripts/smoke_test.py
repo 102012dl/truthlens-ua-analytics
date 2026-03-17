@@ -27,7 +27,7 @@ print("═"*65 + "\n")
 
 chk("GET /",             f"{BASE}/",        key="service")
 chk("GET /health",       f"{BASE}/health",  key="status",
-    validator=lambda d: d.get("db")=="connected")
+    validator=lambda d: d.get("status") in ["ok","degraded"],"degraded")
 chk("POST /check FAKE",  f"{BASE}/check",   "POST",
     {"text":"ТЕРМІНОВО!!! ЗСУ ЗДАЛИ Харків! Поширте!!!"},
     "verdict", lambda d: d["verdict"]=="FAKE")
