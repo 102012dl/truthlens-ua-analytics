@@ -1,5 +1,6 @@
 # Datasets — TruthLens UA Analytics
 
+<<<<<<< HEAD
 All datasets used in the project: name, source, size, format, license, usage.
 
 | Name | URL / Source | Size | Format | License | Usage |
@@ -26,3 +27,15 @@ All datasets used in the project: name, source, size, format, license, usage.
 - Gold cases: 31 (15 REAL, 10 FAKE, 6 SUSPICIOUS)  
 - Domains: 50+ Ukrainian domains (trusted, factchecker, regional, untrusted placeholders)  
 - Language: Ukrainian (uk) for gold set.
+=======
+| Датасет | Розмір | Мова | Формат | Статус |
+|---------|--------|------|--------|--------|
+| gold/demo_cases.csv | 31 | uk | CSV | ✅ локально |
+| lasr-unlp/unlp-2025-shared-task | 0 | uk | HuggingFace | unavailable: ModuleNotFoundError |
+
+## Audit summary
+- Кількість кейсів: 31
+- Кількість дублікатів: 0
+- Мовний розподіл: [{'language': 'uk', 'count': 30}, {'language': 'ru', 'count': 1}]
+- Баланс класів: [{'label': 'REAL', 'count': 15}, {'label': 'FAKE', 'count': 10}, {'label': 'SUSPICIOUS', 'count': 6}]
+>>>>>>> c8044a54feafecac1b7a862c9206bccc05e21870
