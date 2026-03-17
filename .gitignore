@@ -30,3 +30,10 @@ postgres-data/
 # OS
 .DS_Store
 Thumbs.db
+
+# Large Datasets and DBs
+data/raw/isot/*.csv
+data/raw/**/*.csv
+artifacts/*.joblib
+mlruns/
+*.db

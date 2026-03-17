@@ -33,6 +33,12 @@ app.include_router(health.router)
 app.include_router(check.router, prefix="/check")
 
 
+try:
+    from prometheus_fastapi_instrumentator import Instrumentator
+    Instrumentator().instrument(app).expose(app, endpoint="/metrics")
+except ImportError:
+    pass
+
 @app.get("/")
 async def root():
     return {
